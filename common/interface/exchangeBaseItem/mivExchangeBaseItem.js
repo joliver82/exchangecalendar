@@ -268,8 +268,7 @@ mivExchangeBaseItem.prototype = {
         this._cloneCount = 0;
 
 
-        //		this.timeZones = Cc["@1st-setup.nl/exchange/timezones;1"]
-        //					.getService(Ci.mivExchangeTimeZones);
+        //		this.timeZones = (new (ChromeUtils.import("resource://interfacescalendartask/exchangeTimeZones/mivExchangeTimeZones.js").mivExchangeTimeZones)());
 
         //dump("initExchangeBaseItem: done.\n");
 

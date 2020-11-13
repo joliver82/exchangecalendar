@@ -69,7 +69,7 @@
         <implementation>
             <constructor>
 <![CDATA[
-        Components.utils.import("resource://calendar/modules/calUtils.jsm");
+        ChromeUtils.import("resource://calendar/modules/calUtils.jsm");
         let calMgr = cal.getCalendarManager();
         calMgr.addObserver(this.calMgrObserver);
 

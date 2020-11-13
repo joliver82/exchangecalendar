@@ -73,9 +73,11 @@
         <wizardpage pageid="exchWebService_exchange1"
                     next="finishPage"
                     label="&wizard.label;"
-                    description="&exchange1.description;"
+                    description="&exchange1.description;" >
+                    <!--
                     onpageshow="checkRequired();tmpCalendarCreation.initExchange1();"
                     onpageadvanced="tmpCalendarCreation.saveSettings();">
+                     -->
                     
             <vbox id="exchWebService-exchange-settings" />
         </wizardpage>

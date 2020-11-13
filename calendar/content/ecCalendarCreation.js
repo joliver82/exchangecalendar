@@ -37,7 +37,7 @@
 var Cc = Components.classes;
 var Ci = Components.interfaces;
 
-const { mivFunctions } = Components.utils.import("resource://exchangecommoninterfaces/global/mivFunctions.js");
+const { mivFunctions } = ChromeUtils.import("resource://exchangecommoninterfaces/global/mivFunctions.js");
 
 function exchCalendarCreation(aDocument, aWindow) {
     this._document = aDocument;
@@ -60,6 +60,7 @@ exchCalendarCreation.prototype = {
         .getBranch("extensions.exchangecalendar@extensions.1st-setup.nl.createcalendar."),
 
     doRadioExchangeCalendar: function _doRadioExchangeCalendar(type) {
+
         if (this.firstTime) {
             // Get the next page to change how it should advance.
             let aCustomizePage = this._document.getElementById('calendar-wizard').getPageById("customizePage");
@@ -115,6 +116,8 @@ exchCalendarCreation.prototype = {
     },
 
     initExchange1: function _initExchange1() {
+        this.globalFunctions.LOG("CAL CREATION FUNCTION: initExchange1");
+
         this.createPrefs.deleteBranch("");
 
         var selItem = this._document.getElementById("email-identity-menulist").selectedItem;
@@ -155,6 +158,7 @@ exchCalendarCreation.prototype = {
      * comm-central/calendar/resources/content/calendarCreation.js
      */
     saveSettings: function _saveSettings() {
+        this.globalFunctions.LOG("CAL CREATION FUNCTION: saveSettings")
         this.globalFunctions.LOG("saveSettings Going to create the calendar in prefs.js");
 
         // Calculate the new calendar.id and properties
@@ -175,7 +179,7 @@ exchCalendarCreation.prototype = {
         // We create a new URI for this calendar which will contain the calendar.id
         var ioService = Cc["@mozilla.org/network/io-service;1"]
             .getService(Ci.nsIIOService);
-        var tmpURI = ioService.newURI("https://auto/" + newCalId, null, null);
+        var tmpURI = ioService.newURI("https://auto/" + newCalId);
 
         // Register calendar to global settings
         var calPrefs = Cc["@mozilla.org/preferences-service;1"]
@@ -188,7 +192,33 @@ exchCalendarCreation.prototype = {
         var calManager = Cc["@mozilla.org/calendar/manager;1"]
             .getService(Ci.calICalendarManager);
 
+        if(!calManager)
+        {
+            this.globalFunctions.LOG("Calendar Manager is none");
+        }
+
+        if(!tmpURI)
+        {
+            this.globalFunctions.LOG("Temp URI is none");
+        }
+
         var newCal = calManager.createCalendar("exchangecalendar", tmpURI);
+
+        if(!newCal)
+        {
+            this.globalFunctions.LOG("New Calendar is none");
+
+            this.globalFunctions.LOG("Showing all calendar types:");
+            //Cc["@mozilla.org/calendar/calendar;1?type=" + type]
+            for ( caltype in Cc )
+            {
+                if(caltype.includes("includes"))
+                {
+                    this.globalFunctions.LOG(caltype);
+                }
+            }
+            this.globalFunctions.LOG("EO Showing all calendar types:");
+        }
 
         newCal.id = newCalId;
         newCal.name = newCalName;
@@ -223,3 +253,20 @@ exchCalendarCreation.prototype = {
 }
 
 var tmpCalendarCreation = new exchCalendarCreation(document, window);
+
+tmpCalendarCreation.globalFunctions.LOG("Window obj:");
+
+window.addEventListener("pageshow", 
+    function eCC_onPageShow() {
+        tmpCalendarCreation.globalFunctions.LOG("eCC_onPageShow");
+        checkRequired();
+        tmpCalendarCreation.initExchange1();
+    });
+
+window.addEventListener("pageadvanced",
+    function eCC_onPageAdvanced() {
+        tmpCalendarCreation.globalFunctions.LOG("eCC_onPageAdvanced");
+        tmpCalendarCreation.saveSettings();
+    });
+
+tmpCalendarCreation.globalFunctions.LOG("Added listeners 0");

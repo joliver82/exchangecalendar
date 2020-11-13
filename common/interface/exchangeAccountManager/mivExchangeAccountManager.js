@@ -26,6 +26,7 @@ var components = Components;
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 
+var EXPORTED_SYMBOLS = [ "mivExchangeAccountManager" ];
 function mivExchangeAccountManager() {
 
     this.prefs = Cc["@mozilla.org/preferences-service;1"]

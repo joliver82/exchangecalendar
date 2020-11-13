@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "applications": {
     "gecko": {
-      "id": "github.com_exchangecalendar@community.invalid",
+      "id": "exchangecalendar@extensions.1st-setup.nl",
       "strict_min_version": "68.0"
     }
   },

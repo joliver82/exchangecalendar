@@ -26,6 +26,8 @@ var components = Components;
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 
+var EXPORTED_SYMBOLS = [ "mivExchangeItemsManager" ];
+
 function mivExchangeItemsManager() {
 
     this.globalFunctions = (new (ChromeUtils.import("resource://exchangecommoninterfaces/global/mivFunctions.js").mivFunctions)());
@@ -46,8 +48,8 @@ function mivExchangeItemsManager() {
         .getService(Ci.nsIPrefBranch)
         .getBranch("extensions.exchangecalendar@extensions.1st-setup.nl.");
 
-    this._accountManager = Cc["@1st-setup.nl/exchange/accountmanager;1"]
-        .getService(Ci.mivExchangeAccountManager);
+    var { mivExchangeAccountManager } = ChromeUtils.import("resource://exchangecommoninterfaces/exchangeAccountManager/mivExchangeAccountManager.js", null);
+    this._accountManager = new mivExchangeAccountManager();
 
     this._loadBalancer = (new (ChromeUtils.import("resource://exchangecommoninterfaces/exchangeLoadBalancer/mivExchangeLoadBalancer.js").mivExchangeLoadBalancer)());
 

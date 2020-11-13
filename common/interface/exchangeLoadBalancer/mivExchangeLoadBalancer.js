@@ -25,7 +25,7 @@ var Cr = Components.results;
 var components = Components;
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
-const { mivFunctions } = Components.utils.import("resource://exchangecommoninterfaces/global/mivFunctions.js");
+const { mivFunctions } = ChromeUtils.import("resource://exchangecommoninterfaces/global/mivFunctions.js");
 
 var EXPORTED_SYMBOLS = [ "mivExchangeLoadBalancer" ];
 

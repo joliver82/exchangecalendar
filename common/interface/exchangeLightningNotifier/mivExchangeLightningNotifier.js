@@ -27,6 +27,14 @@ var components = Components;
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.import("resource://calendar/modules/calUtils.jsm");
 
+var EXPORTED_SYMBOLS = [ "mivExchangeLightningNotifier" ];
+
+/**
+ * mivExchangeLightningNotifier
+ * 
+ * @class
+ * @constructor
+ */
 function mivExchangeLightningNotifier() {
     this.queue = [];
 

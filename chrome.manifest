@@ -30,3 +30,7 @@ manifest addressbook/exchangeAddressBook.manifest
 manifest calendar/exchangeCalendar.manifest
 manifest common/exchangeCommon.manifest
 manifest emailtag/exchangeEmailTag.manifest
+manifest calendar/interface/exchangeCalendar/mivExchangeCalendar.manifest
+
+manifest calendar/interface/exchangeTest/mivExchangeTest.manifest
+

@@ -40,9 +40,9 @@ var Cc = Components.classes;
 var Ci = Components.interfaces;
 
 var Cr = Components.results;
-var components = Components;
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { AddonManager } = ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
 
 const { cal } = ChromeUtils.import("resource://calendar/modules/calUtils.jsm");
 
@@ -81,6 +81,8 @@ ChromeUtils.import("resource://exchangecommoninterfaces/xml2json/xml2json.js");
 
 ChromeUtils.import("resource://interfacescalendartask/exchangeTodo/mivExchangeTodo.js");
 ChromeUtils.import("resource://interfacescalendartask/exchangeEvent/mivExchangeEvent.js");
+
+var EXPORTED_SYMBOLS = ["calExchangeCalendar"];
 
 var globalStart = new Date().getTime();
 
@@ -292,10 +294,12 @@ const MAPI_PidLidTaskAcceptanceState = "33066";
 const MAPI_PidLidReminderSignalTime = "34144";
 const MAPI_PidLidReminderSet = "34051";
 
-//
-// calExchangeCalendar
-//
-
+/**
+ * calExchangeCalendar
+ * 
+ * @class
+ * @constructor
+ */
 function calExchangeCalendar() {
 
     try {
@@ -304,6 +308,8 @@ function calExchangeCalendar() {
         this.initProviderBase();
 
         this.globalFunctions = (new (ChromeUtils.import("resource://exchangecommoninterfaces/global/mivFunctions.js").mivFunctions)());
+
+        this.globalFunctions.LOG("Constructor: 1");
 
         this.timeZones = (new (ChromeUtils.import("resource://interfacescalendartask/exchangeTimeZones/mivExchangeTimeZones.js").mivExchangeTimeZones)());
 
@@ -360,6 +366,8 @@ function calExchangeCalendar() {
 
         this.shutdown = false;
 
+        this.globalFunctions.LOG("Constructor: 2");
+
         this.inboxPoller = Cc["@mozilla.org/timer;1"]
             .createInstance(Ci.nsITimer);
 
@@ -370,12 +378,15 @@ function calExchangeCalendar() {
         this.observerService = Cc["@mozilla.org/observer-service;1"]
             .getService(Ci.nsIObserverService);
 
-        this.lightningNotifier = Cc["@1st-setup.nl/exchange/lightningnotifier;1"]
-            .getService(Ci.mivExchangeLightningNotifier);
+        this.globalFunctions.LOG("Constructor: 3");
+
+        this.lightningNotifier = (new (ChromeUtils.import("resource://exchangecommoninterfaces/exchangeLightningNotifier/mivExchangeLightningNotifier.js").mivExchangeLightningNotifier)());
 
         this.loadBalancer = (new (ChromeUtils.import("resource://exchangecommoninterfaces/exchangeLoadBalancer/mivExchangeLoadBalancer.js").mivExchangeLoadBalancer)());
 
         this.exchangeStatistics = (new (ChromeUtils.import("resource://exchangecommoninterfaces/exchangeStatistics/mivExchangeStatistics.js").mivExchangeStatistics)());
+
+        this.globalFunctions.LOG("Constructor: 4");
 
         this.calendarPoller = null;
 
@@ -400,6 +411,8 @@ function calExchangeCalendar() {
         this._canModify = false;
         this._canCreateContent = false;
 
+        this.globalFunctions.LOG("Constructor: 5");
+
         this.mIsOffline = Components.classes["@mozilla.org/network/io-service;1"]
             .getService(Components.interfaces.nsIIOService).offline;
 
@@ -412,15 +425,43 @@ function calExchangeCalendar() {
         this.itemUpdates = 0;
         this.itemsFromExchange = 0;
         this.masterCount = 0;
+
+        this.globalFunctions.LOG("Constructor: 6");
+        
     }
     catch (err) {
         dump("mivExchangeCalendar.new Err:" + err + "\n");
+        this.globalFunctions.LOG("Constructor: mivExchangeCalendar.new Err:" + err);
     }
 
     exchWebService.check4addon.logAddOnVersion();
 }
 
 var calExchangeCalendarGUID = "720a458e-b6cd-4883-8a4d-5be27ec454d8";
+var calExchangeCalendarClassID = Components.ID("{" + calExchangeCalendarGUID + "}");
+/*
+var calExchangeCalendarInterfaces = [
+    Ci.mivExchangeCalendar,
+    Ci.calICalendarACLManager,
+    Ci.calICalendar,
+    Ci.calICalendarProvider,
+    Ci.calIFreeBusyService,
+    Ci.calIItipTransport,
+    Ci.calISchedulingSupport,
+    Ci.calICalendarProvider,
+    Ci.nsIClassInfo,
+    Ci.nsISupports
+];
+*/
+
+// limited interfaces to minimum
+var calExchangeCalendarInterfaces = [
+    Ci.calICalendar,
+    Ci.calISchedulingSupport
+];
+
+var calExchangeCalendarDescription = "Exchange 2007/2010 Calendar and Tasks Provider";
+var calExchangeCalendarContractID = "@mozilla.org/calendar/calendar;1?type=exchangecalendar";
 
 calExchangeCalendar.prototype = {
 
@@ -433,25 +474,25 @@ calExchangeCalendar.prototype = {
     __proto__: cal.provider.BaseClass.prototype,
 
     // Begin nsIClassInfo
-    classID: components.ID("{" + calExchangeCalendarGUID + "}"),
-    contractID: "@mozilla.org/calendar/calendar;1?type=exchangecalendar",
-    classDescription: "Exchange 2007/2010 Calendar and Tasks Provider",
-
+    classID: calExchangeCalendarClassID,
+    contractID: calExchangeCalendarContractID,
+    classDescription: calExchangeCalendarDescription,
+    
+    QueryInterface: cal.generateQI(calExchangeCalendarInterfaces),
+    classInfo: cal.generateCI({
+        classDescription: calExchangeCalendarDescription,
+        contractID: calExchangeCalendarContractID,
+        classID: calExchangeCalendarClassID,
+        interfaces: calExchangeCalendarInterfaces
+    }),
+    
     // void getInterfaces(out PRUint32 count, [array, size_is(count), retval] out nsIIDPtr array);
     getInterfaces: function _getInterfaces(count) {
-        var ifaces = [Ci.mivExchangeCalendar,
-            Ci.calICalendarACLManager,
-            Ci.calICalendar,
-            Ci.calICalendarProvider,
-            Ci.calIFreeBusyService,
-            Ci.calIItipTransport,
-            Ci.calISchedulingSupport,
-            Ci.calICalendarProvider,
-            Ci.nsIClassInfo,
-            Ci.nsISupports
-        ];
-        count.value = ifaces.length;
-        return ifaces;
+        if(count)
+        {
+            count.value = calExchangeCalendarInterfaces.length;
+        }
+        return calExchangeCalendarInterfaces;
     },
 
     // nsISupports getHelperForLanguage(in PRUint32 language);
@@ -575,7 +616,7 @@ calExchangeCalendar.prototype = {
             this.newCalendar = true;
         }
 
-        return this.uri;
+        return this.mUri;
     },
 
     startupLoadFromOfflineCache: function _startupLoadFromOfflineCache() {
@@ -9035,7 +9076,6 @@ calExchangeCalendar.prototype = {
 
         try {
             this.logInfo("checkExchCalAddonVerion: ");
-            ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
             var self = this;
             AddonManager.getAddonByID("exchangecalendar@extensions.1st-setup.nl", function (Addon) {
                 self.removeExchCalDbCache(self, Addon);
@@ -10954,7 +10994,13 @@ exchWebService.check4addon = {
 
         this.alreadyLogged = true;
 
-        ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
-        AddonManager.getAddonByID("exchangecalendar@extensions.1st-setup.nl", exchWebService.check4addon.checkAddOnIsInstalledCallback);
+        try{
+            AddonManager.getAddonByID("exchangecalendar@extensions.1st-setup.nl", exchWebService.check4addon.checkAddOnIsInstalledCallback);
+        }
+        catch(ex)
+        {
+            var globalFunctions = (new (ChromeUtils.import("resource://exchangecommoninterfaces/global/mivFunctions.js").mivFunctions)());
+            globalFunctions.LOG("logAddOnVersion:  Exception occured ");
+        }
     }
 };

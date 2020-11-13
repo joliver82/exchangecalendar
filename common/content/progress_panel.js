@@ -31,7 +31,7 @@ var Cc = Components.classes;
 var Ci = Components.interfaces;
 
 
-const { mivExchangeLoadBalancer } = Components.utils.import("resource://exchangecommoninterfaces/exchangeLoadBalancer/mivExchangeLoadBalancer.js");
+const { mivExchangeLoadBalancer } = ChromeUtils.import("resource://exchangecommoninterfaces/exchangeLoadBalancer/mivExchangeLoadBalancer.js");
 //ChromeUtils.import("resource://exchangecommon/ecFunctions.js");
 
 //if (! exchWebService) var exchWebService = {};

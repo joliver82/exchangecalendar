@@ -3,7 +3,7 @@
 
 var Cc = Components.classes;
 var Ci = Components.interfaces;
-Components.utils.import("resource:///modules/iteratorUtils.jsm");
+ChromeUtils.import("resource:///modules/iteratorUtils.jsm");
 
 var importantTag;
 

@@ -1,0 +1,2 @@
+component {518419a0-1997-11eb-8b6f-0800200c9a66} mivExchangeCalendar.js
+contract @mozilla.org/calendar/calendar;1?type=exchangetest {518419a0-1997-11eb-8b6f-0800200c9a66}

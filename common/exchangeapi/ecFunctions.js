@@ -61,7 +61,7 @@ exchWebService.commonFunctions = {
     }
 };
 
-const { mivFunctions: _mivFunctions } = Components.utils.import("resource://exchangecommoninterfaces/global/mivFunctions.js");
+const { mivFunctions: _mivFunctions } = ChromeUtils.import("resource://exchangecommoninterfaces/global/mivFunctions.js");
 const mivFunctions = new _mivFunctions();
 exchWebService.commonFunctions.doEncodeFolderSpecialChars = mivFunctions.doEncodeFolderSpecialChars;
 exchWebService.commonFunctions.encodeFolderSpecialChars = mivFunctions.encodeFolderSpecialChars;

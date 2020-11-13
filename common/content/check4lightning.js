@@ -32,7 +32,7 @@ var Ci = Components.interfaces;
 
 
 ChromeUtils.import("resource:///modules/MailServices.jsm");
-const { mivFunctions } = Components.utils.import("resource://exchangecommoninterfaces/global/mivFunctions.js");
+const { mivFunctions } = ChromeUtils.import("resource://exchangecommoninterfaces/global/mivFunctions.js");
 
 
 
@@ -176,7 +176,7 @@ exchCheck4Lightning.prototype = {
         this.checkLightningIsInstalled();
 
         if ((this.globalFunctions.safeGetBoolPref(null, "extensions.1st-setup.others.checkForNewAddOnVersion", true, true)) && (!this.updateCheckDone)) {
-          const { mivUpdater } = Components.utils.import("resource://exchangecommoninterfaces/updater/mivUpdater.js");
+          const { mivUpdater } = ChromeUtils.import("resource://exchangecommoninterfaces/updater/mivUpdater.js");
           const updatecheck = new mivUpdater();
             var self = this;
             updatecheck.checkForUpdate("exchangecalendar@extensions.1st-setup.nl", function (aResult) {
